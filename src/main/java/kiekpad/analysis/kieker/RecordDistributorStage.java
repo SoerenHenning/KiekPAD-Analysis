@@ -1,6 +1,6 @@
 package kiekpad.analysis.kieker;
 
-import teead.util.Filter;
+import kiekpad.analysis.util.FilterStage;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
@@ -18,7 +18,7 @@ public class RecordDistributorStage extends CompositeStage {
 	}
 
 	public OutputPort<MonitoringRecord> getNewOutputPort(final RecordFilter filter) {
-		final Filter<MonitoringRecord> filterStage = new Filter<>(filter);
+		final FilterStage<MonitoringRecord> filterStage = new FilterStage<>(filter);
 
 		super.connectPorts(this.distributor.getNewOutputPort(), filterStage.getInputPort());
 		return filterStage.getOutputPort();
