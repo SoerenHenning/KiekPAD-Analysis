@@ -3,4 +3,11 @@
   <groupId>de.soerenhenning</groupId>
   <artifactId>kiekpad-analysis</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.soeren-henning</groupId>
+  		<artifactId>teead</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>
