@@ -27,7 +27,7 @@ public class Trace {
 		return this.buffer.pop();
 	}
 
-	public boolean isEmpty() {
+	public boolean isBufferEmpty() {
 		return this.buffer.isEmpty();
 	}
 

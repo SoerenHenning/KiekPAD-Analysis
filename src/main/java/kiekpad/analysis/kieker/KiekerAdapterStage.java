@@ -62,7 +62,7 @@ public class KiekerAdapterStage extends AbstractTransformation<IFlowRecord, Moni
 		final Trace trace = this.traces.get(event.getTraceId());
 
 		final BeforeOperationEvent beforeEvent = trace.popEvent();
-		if (trace.isEmpty()) {
+		if (trace.isBufferEmpty()) {
 			this.traces.remove(event.getTraceId());
 		}
 
