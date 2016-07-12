@@ -18,7 +18,7 @@ public class SimpleConfiguration extends Configuration {
 		// Create the stages
 		final TcpReaderStage tcpReaderStage = new TcpReaderStage();
 		final InstanceOfFilter<IMonitoringRecord, IFlowRecord> flowRecordFilter = new InstanceOfFilter<>(IFlowRecord.class);
-		final KiekerAdapterStage recordReconstructor = new KiekerAdapterStage();
+		final RecordReconstructorStage recordReconstructor = new RecordReconstructorStage();
 		final Distributor<MonitoringRecord> distributor = new Distributor<>(new CopyByReferenceStrategy());
 		final RecordConverterStage recordConverter = new RecordConverterStage();
 		final AnomalyDetectionStage anomalyDetector = new StorableAnomalyDetectionStage(null, null, null, null, null);

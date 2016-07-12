@@ -13,7 +13,7 @@ import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
 import teetime.stage.basic.AbstractTransformation;
 
-public class KiekerAdapterStage extends AbstractTransformation<IFlowRecord, MonitoringRecord> {
+public class RecordReconstructorStage extends AbstractTransformation<IFlowRecord, MonitoringRecord> {
 
 	private final Map<Long, Trace> traces = new HashMap<>();
 	private Instant start = null;
