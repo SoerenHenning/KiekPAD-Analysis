@@ -1,4 +1,4 @@
-package kiekpad.analysis.kieker;
+package kiekpad.analysis.stage;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -11,6 +11,8 @@ import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.AfterOperationFailedEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
+import kiekpad.analysis.domain.MonitoringRecord;
+import kiekpad.analysis.domain.Trace;
 import teetime.stage.basic.AbstractTransformation;
 
 public class RecordReconstructorStage extends AbstractTransformation<IFlowRecord, MonitoringRecord> {

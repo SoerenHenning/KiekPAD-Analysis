@@ -1,8 +1,11 @@
-package kiekpad.analysis.kieker;
+package kiekpad.analysis;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 
+import kiekpad.analysis.domain.MonitoringRecord;
+import kiekpad.analysis.stage.RecordConverterStage;
+import kiekpad.analysis.stage.RecordReconstructorStage;
 import teead.AnomalyDetectionStage;
 import teead.StorableAnomalyDetectionStage;
 import teetime.framework.Configuration;

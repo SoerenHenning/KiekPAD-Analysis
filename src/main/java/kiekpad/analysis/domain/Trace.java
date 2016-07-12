@@ -1,4 +1,4 @@
-package kiekpad.analysis.kieker;
+package kiekpad.analysis.domain;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

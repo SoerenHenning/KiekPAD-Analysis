@@ -1,5 +1,7 @@
-package kiekpad.analysis.kieker;
+package kiekpad.analysis.stage;
 
+import kiekpad.analysis.domain.MonitoringRecord;
+import kiekpad.analysis.domain.RecordFilter;
 import kiekpad.analysis.util.FilterStage;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;

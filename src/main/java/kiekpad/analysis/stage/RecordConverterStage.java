@@ -1,7 +1,8 @@
-package kiekpad.analysis.kieker;
+package kiekpad.analysis.stage;
 
 import java.time.Instant;
 
+import kiekpad.analysis.domain.MonitoringRecord;
 import teead.measurement.Measurement;
 import teetime.stage.basic.AbstractTransformation;
 
