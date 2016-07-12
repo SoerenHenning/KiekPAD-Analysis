@@ -1,5 +1,6 @@
 package kiekpad.analysis.kieker;
 
+import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -17,9 +18,16 @@ import teetime.stage.basic.AbstractTransformation;
 public class KiekerAdapterStage extends AbstractTransformation<IFlowRecord, MonitoringRecord> {
 
 	private final Map<Long, Trace> traces = new HashMap<>();
+	private Instant start = null;
+	private long offsetInNs;
 
 	@Override
 	protected void execute(final IFlowRecord record) {
+		if (this.start == null) {
+			this.start = Instant.now();
+			this.offsetInNs = record.getLoggingTimestamp();
+		}
+
 		if (record instanceof TraceMetadata) {
 			this.handleMetadataRecord((TraceMetadata) record);
 		} else if (record instanceof AbstractOperationEvent) {
@@ -70,7 +78,7 @@ public class KiekerAdapterStage extends AbstractTransformation<IFlowRecord, Moni
 		record.setHostname(trace.getHostname());
 		record.setSessionId(trace.getSessionId());
 		record.setThreadId(trace.getThreadId());
-		record.setTimestamp(beforeEvent.getTimestamp());
+		record.setTime(this.start.plusNanos(beforeEvent.getTimestamp() - this.offsetInNs));
 		record.setDuration(event.getTimestamp() - beforeEvent.getTimestamp());
 
 		this.outputPort.send(record);

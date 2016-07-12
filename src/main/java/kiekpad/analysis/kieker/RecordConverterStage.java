@@ -9,9 +9,7 @@ public class RecordConverterStage extends AbstractTransformation<MonitoringRecor
 
 	@Override
 	protected void execute(final MonitoringRecord record) {
-		// TODO This is wrong! record.getTimestamp() delivers nanoseconds relative to
-		// an fixed arbitrary time...
-		final Instant time = Instant.ofEpochMilli(record.getTimestamp());
+		final Instant time = record.getTime();
 		final double value = record.getDuration();
 		final Measurement measurement = new Measurement(time, value);
 
