@@ -1,5 +1,7 @@
 package kiekpad.analysis;
 
+import java.time.Duration;
+
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 
@@ -10,6 +12,9 @@ import kiekpad.analysis.stage.RecordReconstructorStage;
 import kiekpad.analysis.util.FilterStage;
 import teead.AnomalyDetectionStage;
 import teead.StorableAnomalyDetectionStage;
+import teead.aggregation.Aggregator;
+import teead.forecast.Forecaster;
+import teead.storage.StorageDriver;
 import teetime.framework.Configuration;
 import teetime.stage.InstanceOfFilter;
 import teetime.stage.basic.distributor.Distributor;
@@ -33,13 +38,14 @@ public class AnalysisConfiguration extends Configuration {
 
 	}
 
-	public void addAnalysis() {
-		final RecordFilter recordFilter = new RecordFilter();
+	public void addAnalysis(final RecordFilter recordFilter, final Duration slidingWindowDuration, final Duration normalizationDuration, final Aggregator aggregator,
+			final Forecaster forecaster, final StorageDriver storageDriver) {
 
 		// Create the stages
 		final FilterStage<MonitoringRecord> filter = new FilterStage<>(recordFilter);
 		final RecordConverterStage recordConverter = new RecordConverterStage();
-		final AnomalyDetectionStage anomalyDetector = new StorableAnomalyDetectionStage(null, null, null, null, null);
+		final AnomalyDetectionStage anomalyDetector = new StorableAnomalyDetectionStage(slidingWindowDuration, normalizationDuration, aggregator, forecaster,
+				storageDriver);
 
 		// Connect the stages
 		super.connectPorts(this.distributor.getNewOutputPort(), filter.getInputPort());
