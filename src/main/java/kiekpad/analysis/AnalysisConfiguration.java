@@ -36,7 +36,7 @@ public class AnalysisConfiguration extends Configuration {
 
 	}
 
-	public void addAnalysis(final RecordFilter recordFilter, final Duration slidingWindowDuration, final Duration normalizationDuration, final Aggregator aggregator,
+	public void addAnalysis(final RecordFilter filter, final Duration slidingWindowDuration, final Duration normalizationDuration, final Aggregator aggregator,
 			final Forecaster forecaster, final StorageDriver storageDriver) {
 
 		// Create the stages
@@ -45,7 +45,7 @@ public class AnalysisConfiguration extends Configuration {
 				storageDriver);
 
 		// Connect the stages
-		super.connectPorts(this.distributor.getNewOutputPort(recordFilter), recordConverter.getInputPort());
+		super.connectPorts(this.distributor.getNewOutputPort(filter), recordConverter.getInputPort());
 		super.connectPorts(recordConverter.getOutputPort(), anomalyDetector.getInputPort());
 	}
 
