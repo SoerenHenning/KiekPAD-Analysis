@@ -25,6 +25,7 @@ public class AnalysisConfiguration extends Configuration {
 
 	private final Distributor<MonitoringRecord> distributor = new Distributor<>(new CopyByReferenceStrategy());
 
+	// TODO ports
 	public AnalysisConfiguration() {
 		// Create the stages
 		final TcpReaderStage tcpReaderStage = new TcpReaderStage();
