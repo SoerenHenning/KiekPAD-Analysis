@@ -25,7 +25,7 @@ public class Analysis {
 	private static AnalysisConfiguration buildExampleConfiguration() {
 		String ipAddress = "192.168.99.100";
 		int port = 32770;
-		String keyspace = "demo3";
+		String keyspace = "Kiekpad";
 
 		Cluster cluster = Cluster.builder().addContactPoint(ipAddress).withPort(port).build();
 		Session session = cluster.connect(keyspace);
