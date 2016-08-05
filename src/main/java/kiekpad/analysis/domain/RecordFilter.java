@@ -10,27 +10,7 @@ public class RecordFilter implements Predicate<MonitoringRecord> {
 	private String sessionId = null;
 	private Long threadId = null;
 
-	public RecordFilter() {}
-
-	public void setOperationSignature(final String operationSignature) {
-		this.operationSignature = operationSignature;
-	}
-
-	public void setClassSignature(final String classSignature) {
-		this.classSignature = classSignature;
-	}
-
-	public void setHostname(final String hostname) {
-		this.hostname = hostname;
-	}
-
-	public void setSessionId(final String sessionId) {
-		this.sessionId = sessionId;
-	}
-
-	public void setThreadId(final long threadId) {
-		this.threadId = threadId;
-	}
+	private RecordFilter() {}
 
 	@Override
 	public boolean test(final MonitoringRecord record) {
@@ -56,6 +36,45 @@ public class RecordFilter implements Predicate<MonitoringRecord> {
 		}
 
 		return true;
+	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	public static class Builder {
+
+		private final RecordFilter filter = new RecordFilter();
+
+		public Builder operationSignature(final String operationSignature) {
+			filter.operationSignature = operationSignature;
+			return this;
+		}
+
+		public Builder classSignature(final String classSignature) {
+			filter.classSignature = classSignature;
+			return this;
+		}
+
+		public Builder hostname(final String hostname) {
+			filter.hostname = hostname;
+			return this;
+		}
+
+		public Builder sessionId(final String sessionId) {
+			filter.sessionId = sessionId;
+			return this;
+		}
+
+		public Builder threadId(final long threadId) {
+			filter.threadId = threadId;
+			return this;
+		}
+
+		public RecordFilter build() {
+			return this.filter;
+		}
+
 	}
 
 }
