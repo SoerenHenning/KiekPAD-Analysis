@@ -40,7 +40,11 @@
 			<artifactId>teead</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
+		<dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-configuration2</artifactId>
+		  <version>2.0</version>
+		</dependency>
 	</dependencies>
 
 	<distributionManagement>
