@@ -1,54 +1,61 @@
 package kiekpad.analysis;
 
-import java.io.File;
-import java.net.URL;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.time.Duration;
 
-import org.apache.commons.configuration2.CompositeConfiguration;
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
 import kiekpad.analysis.domain.RecordFilter;
+import teead.aggregation.Aggregator;
 import teead.aggregation.MeanAggregator;
+import teead.forecast.Forecaster;
 import teead.forecast.RegressionForecaster;
 import teead.storage.CassandraAdapter;
 import teetime.framework.Execution;
 
 public class Analysis {
 
-	public static void main(final String[] args) {
+	private final Configuration configuration;
+	private final AnalysisConfiguration analysisConfiguration;
 
-		Configurations configs = new Configurations();
+	public Analysis() {
 
-		ClassLoader cl = Analysis.class.getClassLoader();
-		URL url = cl.getResource("META-INF/application.properties");
-		File file = new File(url.getFile());
+		this.configuration = new ConfigurationProvider().createConfiguration();
+		this.analysisConfiguration = new AnalysisConfiguration();
 
-		CompositeConfiguration cc = new CompositeConfiguration();
+	}
 
+	public void addAnalysisBranchesFromPropertyFiles() {
+		// TODO
+		Path directory = null; // TODO temp
+		this.addAnalysisBranchesFromPropertyFiles(directory);
+	}
+
+	public void addAnalysisBranchesFromPropertyFiles(final Path directory) {
+		final PathMatcher filter = directory.getFileSystem().getPathMatcher("glob:*.properties");
 		try {
-			Configuration config = configs.properties(file);
-			cc.addConfiguration(config);
-		} catch (ConfigurationException e) {
+			Files.list(directory).filter(filter::matches).forEach(file -> addAnalysisBranchFromPropertyFile(file));
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		System.out.println(cc.getString("name"));
-
-		executeAnalysis(buildExampleConfiguration());
 	}
 
-	public static void executeAnalysis(final AnalysisConfiguration analysisConfiguration) {
-		final Execution<AnalysisConfiguration> analysis = new Execution<>(analysisConfiguration);
-		analysis.executeBlocking();
+	public void addAnalysisBranchFromPropertyFile(final Path path) {
+		// TODO
+		// load deafult propeties file
+		// merge with this
+		// call addAnalysisBranch
 	}
 
-	private static AnalysisConfiguration buildExampleConfiguration() {
+	public void addAnalysisBranch(final Configuration branchConfiguration) {
+		// TODO Do something
 		String ipAddress = "192.168.99.100";
 		int port = 32770;
 		String keyspace = "Kiekpad";
@@ -56,12 +63,26 @@ public class Analysis {
 		Cluster cluster = Cluster.builder().addContactPoint(ipAddress).withPort(port).build();
 		Session session = cluster.connect(keyspace);
 
-		AnalysisConfiguration analysisConfiguration = new AnalysisConfiguration();
 		RecordFilter recordFilter = RecordFilter.builder().operationSignature("public void watchme.FooMethod.foo()").build();
-		analysisConfiguration.addAnalysis(recordFilter, Duration.ofHours(1), Duration.ofSeconds(5), new MeanAggregator(), new RegressionForecaster(),
-				new CassandraAdapter(session, "measurements", "foo()-160805-2"));
+		Duration slidingWindowDuration = Duration.ofHours(1);
+		Duration normalizationDuration = Duration.ofSeconds(5);
+		Forecaster forecaster = new RegressionForecaster();
+		Aggregator aggregator = new MeanAggregator();
+		CassandraAdapter storageAdapter = new CassandraAdapter(session, "measurements", "foo()-160805-2");
 
-		return analysisConfiguration;
+		this.analysisConfiguration.addAnalysis(recordFilter, slidingWindowDuration, normalizationDuration, aggregator, forecaster, storageAdapter);
+	}
+
+	public void start() {
+		// This could be moved to a member variable
+		final Execution<AnalysisConfiguration> analysisExecution = new Execution<>(this.analysisConfiguration);
+		analysisExecution.executeBlocking();
+	}
+
+	public static void main(final String[] args) {
+		Analysis analysis = new Analysis();
+		// analysis.addAnalysisBranchesFromPropertyFiles(); //TODo
+		analysis.start();
 	}
 
 }
