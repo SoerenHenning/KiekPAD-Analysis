@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.time.Duration;
 
 import org.apache.commons.configuration2.Configuration;
@@ -28,8 +29,9 @@ public class Analysis {
 		this.analysisConfiguration = new AnalysisConfiguration();
 		this.cassandraManager = new CassandraManager(this.configuration.getString("cassandra.address"), this.configuration.getInt("cassandra.port"),
 				this.configuration.getString("cassandra.keyspace"), this.configuration.getInt("cassandra.timeout"));
-
-		// TODO Wait for R
+		if (this.configuration.getBoolean("rserve.enabled")) {
+			// TODO Wait for R
+		}
 
 	}
 
@@ -51,10 +53,11 @@ public class Analysis {
 	}
 
 	public void addAnalysisBranchFromPropertyFile(final Path path) {
-		// TODO
-		Path defaultConfiguration = null; // TODO temp
-		ConfigurationFactory.getBranchConfiguration(path, defaultConfiguration);
-		// call addAnalysisBranch
+		// TODO var names
+		String defaultConfigurationString = configuration.getString("branches.path");
+		Path defaultConfiguration = Paths.get(Analysis.class.getClassLoader().getResource(defaultConfigurationString).getFile());
+		Configuration configuration = ConfigurationFactory.getBranchConfiguration(path, defaultConfiguration);
+		addAnalysisBranch(configuration);
 	}
 
 	public void addAnalysisBranch(final Configuration branchConfiguration) {
