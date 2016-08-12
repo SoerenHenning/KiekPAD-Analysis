@@ -23,7 +23,6 @@ public class AnalysisConfiguration extends Configuration {
 
 	private final RecordDistributorStage distributor = new RecordDistributorStage();
 
-	// TODO ports
 	public AnalysisConfiguration() {
 		// Create the stages
 		final TcpReaderStage tcpReaderStage = new TcpReaderStage();
