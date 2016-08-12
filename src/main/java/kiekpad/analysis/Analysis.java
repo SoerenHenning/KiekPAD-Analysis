@@ -36,9 +36,9 @@ public class Analysis {
 	}
 
 	public void addAnalysisBranchesFromPropertyFiles() {
-		// TODO
+		// TODO Names
 		String directoryString = configuration.getString("branches.path");
-		Path directory = null; // TODO temp
+		Path directory = Paths.get(directoryString);
 		this.addAnalysisBranchesFromPropertyFiles(directory);
 	}
 
@@ -47,7 +47,7 @@ public class Analysis {
 		try {
 			Files.list(directory).filter(filter::matches).forEach(file -> addAnalysisBranchFromPropertyFile(file));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// TODO Exception
 			e.printStackTrace();
 		}
 	}
