@@ -1,6 +1,5 @@
 package kiekpad.analysis;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,7 +8,6 @@ import java.nio.file.Paths;
 import java.time.Duration;
 
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
 
 import kiekpad.analysis.domain.RecordFilter;
 import teead.aggregation.Aggregator;
@@ -74,8 +72,23 @@ public class Analysis {
 				.build();
 
 		// TODO Get them from properties
-		Duration slidingWindowDuration = Duration.ofHours(1);
-		Duration normalizationDuration = Duration.ofSeconds(5);
+		Duration slidingWindowDuration = Duration.parse(configuration.getString("slidingWindowDuration"));
+		Duration normalizationDuration = Duration.parse(configuration.getString("normalizationDuration"));
+
+		try {
+			// get forecaster class by using reflection
+			Class<?> algorithmClass = Class.forName(configuration.getString("forecaster"));
+
+			// Class<?>[] constructorParameterClasses = new Class[] { TaskFarmConfiguration.class };
+			// Object[] constructorParameterObjects = new Object[] { this.configuration };
+
+			// Constructor<?> algorithmConstructor = algorithmClass.getConstructor(constructorParameterClasses);
+
+			// algorithm = (AbstractThroughputAlgorithm) algorithmConstructor.newInstance(constructorParameterObjects); // NOPMD: returns in outer block
+		} catch (Exception exception) {
+			// TODO
+		}
+
 		Forecaster forecaster = new RegressionForecaster();
 		Aggregator aggregator = new MeanAggregator();
 		CassandraAdapter storageAdapter = new CassandraAdapter(this.cassandraManager.getSession(), "measurements", "foo()-160805-2");
@@ -92,8 +105,6 @@ public class Analysis {
 	public static void main(final String[] args) throws Exception {
 		Analysis analysis = new Analysis();
 		// analysis.addAnalysisBranchesFromPropertyFiles(); //TODO
-		analysis.addAnalysisBranch(
-				new Configurations().properties(new File(Analysis.class.getClassLoader().getResource("META-INF/application.properties").getFile())));
 		analysis.start();
 
 	}
