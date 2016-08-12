@@ -1,5 +1,6 @@
 package kiekpad.analysis;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,6 +9,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
 
 import kiekpad.analysis.domain.RecordFilter;
 import teead.aggregation.Aggregator;
@@ -60,10 +62,18 @@ public class Analysis {
 		addAnalysisBranch(configuration);
 	}
 
-	public void addAnalysisBranch(final Configuration branchConfiguration) {
+	public void addAnalysisBranch(final Configuration configuration) {
 		// TODO Do something
 
-		RecordFilter recordFilter = RecordFilter.builder().operationSignature("public void watchme.FooMethod.foo()").build();
+		RecordFilter recordFilter = RecordFilter.builder()
+				.operationSignature(configuration.getString("filter.operationSignature"))
+				.classSignature(configuration.getString("filter.operationSignature"))
+				.hostname(configuration.getString("filter.operationSignature"))
+				.sessionId(configuration.getString("filter.sessionId"))
+				.threadId(configuration.getLong("filter.threadId", null))
+				.build();
+
+		// TODO Get them from properties
 		Duration slidingWindowDuration = Duration.ofHours(1);
 		Duration normalizationDuration = Duration.ofSeconds(5);
 		Forecaster forecaster = new RegressionForecaster();
@@ -79,9 +89,11 @@ public class Analysis {
 		analysisExecution.executeBlocking();
 	}
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws Exception {
 		Analysis analysis = new Analysis();
 		// analysis.addAnalysisBranchesFromPropertyFiles(); //TODO
+		analysis.addAnalysisBranch(
+				new Configurations().properties(new File(Analysis.class.getClassLoader().getResource("META-INF/application.properties").getFile())));
 		analysis.start();
 
 	}

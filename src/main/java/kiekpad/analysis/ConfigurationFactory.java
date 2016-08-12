@@ -1,6 +1,7 @@
 package kiekpad.analysis;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -19,18 +20,19 @@ public class ConfigurationFactory {
 
 		final CompositeConfiguration configuration = new CompositeConfiguration();
 
-		try {
-			File file = new File(Analysis.class.getClassLoader().getResource(DEFAULT_PROPERTY_LOCATION).getFile());
-			configuration.addConfiguration(configurationsHelper.properties(file));
-		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		Path path = Paths.get(USER_PROPERTY_LOCATION);
+		if (Files.exists(path)) {
+			try {
+				configuration.addConfiguration(configurationsHelper.properties(path.toFile()));
+			} catch (ConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
+		File file = new File(Analysis.class.getClassLoader().getResource(DEFAULT_PROPERTY_LOCATION).getFile());
 		try {
-			Path path = Paths.get(USER_PROPERTY_LOCATION);
-			Configuration defaultConfig = configurationsHelper.properties(path.toFile());
-			configuration.addConfiguration(defaultConfig);
+			configuration.addConfiguration(configurationsHelper.properties(file));
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -39,9 +41,26 @@ public class ConfigurationFactory {
 		return configuration;
 	}
 
-	public static Configuration getBranchConfiguration(final Path configuration, final Path defaultConfiguration) {
-		// TODO Merge Configurations
-		return null;
+	public static Configuration getBranchConfiguration(final Path configFile, final Path defaultConfigFile) {
+		final Configurations configurationsHelper = new Configurations();
+
+		final CompositeConfiguration configuration = new CompositeConfiguration();
+
+		try {
+			configuration.addConfiguration(configurationsHelper.properties(configFile.toFile()));
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			configuration.addConfiguration(configurationsHelper.properties(defaultConfigFile.toFile()));
+		} catch (ConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return configuration;
 	}
 
 }

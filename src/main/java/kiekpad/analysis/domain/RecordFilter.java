@@ -46,6 +46,8 @@ public class RecordFilter implements Predicate<MonitoringRecord> {
 
 		private final RecordFilter filter = new RecordFilter();
 
+		private Builder() {}
+
 		public Builder operationSignature(final String operationSignature) {
 			filter.operationSignature = operationSignature;
 			return this;
@@ -67,6 +69,11 @@ public class RecordFilter implements Predicate<MonitoringRecord> {
 		}
 
 		public Builder threadId(final long threadId) {
+			filter.threadId = threadId;
+			return this;
+		}
+
+		public Builder threadId(final Long threadId) {
 			filter.threadId = threadId;
 			return this;
 		}
