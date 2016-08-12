@@ -26,13 +26,17 @@ public class Analysis {
 
 	public Analysis() {
 
-		this.configuration = new ConfigurationProvider().createConfiguration();
+		this.configuration = ConfigurationFactory.getApplicationConfiguration();
 		this.analysisConfiguration = new AnalysisConfiguration();
+
+		// TODO Wait for DB
+		// TODO Wait for R
 
 	}
 
 	public void addAnalysisBranchesFromPropertyFiles() {
 		// TODO
+		String directoryString = configuration.getString("branches.path");
 		Path directory = null; // TODO temp
 		this.addAnalysisBranchesFromPropertyFiles(directory);
 	}
@@ -49,6 +53,7 @@ public class Analysis {
 
 	public void addAnalysisBranchFromPropertyFile(final Path path) {
 		// TODO
+		ConfigurationFactory.getBranchConfiguration(path, null);
 		// load deafult propeties file
 		// merge with this
 		// call addAnalysisBranch
@@ -81,7 +86,7 @@ public class Analysis {
 
 	public static void main(final String[] args) {
 		Analysis analysis = new Analysis();
-		// analysis.addAnalysisBranchesFromPropertyFiles(); //TODo
+		// analysis.addAnalysisBranchesFromPropertyFiles(); //TODO
 		analysis.start();
 	}
 
