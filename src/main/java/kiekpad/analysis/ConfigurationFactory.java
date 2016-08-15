@@ -1,6 +1,5 @@
 package kiekpad.analysis;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,17 +24,24 @@ public class ConfigurationFactory {
 			try {
 				configuration.addConfiguration(configurationsHelper.properties(path.toFile()));
 			} catch (ConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new IllegalArgumentException("Could not load configuration from file "
+						+ "\"" + USER_PROPERTY_LOCATION + "\"", e);
 			}
 		}
 
-		File file = new File(Analysis.class.getClassLoader().getResource(DEFAULT_PROPERTY_LOCATION).getFile());
+		// File file = new File(Analysis.class.getClassLoader().getResource(DEFAULT_PROPERTY_LOCATION).getFile());
+
+		// URL url = Analysis.class.getClassLoader().getResource("");
+		// Path path12 = Paths.get(url.toString());
+		// System.out.println(path12); // TODO
 		try {
-			configuration.addConfiguration(configurationsHelper.properties(file));
+			// System.out.println("file: " + file); // TODO
+			// System.out.println("file.exists()" + file.exists()); // TODO
+			// System.out.println("file.toPath()" + file.toPath()); // TODO
+			configuration.addConfiguration(configurationsHelper.properties(DEFAULT_PROPERTY_LOCATION));
 		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new IllegalArgumentException("Could not load configuration from ressource "
+					+ "\"" + DEFAULT_PROPERTY_LOCATION + "\"", e);
 		}
 
 		return configuration;
