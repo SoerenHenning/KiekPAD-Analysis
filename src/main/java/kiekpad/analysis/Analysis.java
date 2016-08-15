@@ -12,8 +12,10 @@ import org.apache.commons.configuration2.Configuration;
 import kiekpad.analysis.domain.RecordFilter;
 import teead.aggregation.Aggregator;
 import teead.aggregation.MeanAggregator;
+import teead.forecast.AbstractRForecaster;
 import teead.forecast.Forecaster;
-import teead.forecast.RegressionForecaster;
+import teead.forecast.ForecasterConfiguration;
+import teead.forecast.Forecasters;
 import teead.storage.CassandraAdapter;
 import teetime.framework.Execution;
 
@@ -36,7 +38,6 @@ public class Analysis {
 	}
 
 	public void addAnalysisBranchesFromPropertyFiles() {
-		// TODO Names
 		String directoryString = configuration.getString("branches.path");
 		Path directory = Paths.get(directoryString);
 		this.addAnalysisBranchesFromPropertyFiles(directory);
@@ -53,47 +54,51 @@ public class Analysis {
 	}
 
 	public void addAnalysisBranchFromPropertyFile(final Path path) {
-		// TODO var names
-		String defaultConfigurationString = configuration.getString("branches.path");
-		Path defaultConfiguration = Paths.get(Analysis.class.getClassLoader().getResource(defaultConfigurationString).getFile());
-		Configuration configuration = ConfigurationFactory.getBranchConfiguration(path, defaultConfiguration);
-		addAnalysisBranch(configuration);
+		String defaultConfigsPathString = configuration.getString("branches.path");
+		Path defaultConfigsPath = Paths.get(Analysis.class.getClassLoader().getResource(defaultConfigsPathString).getFile());
+		Configuration config = ConfigurationFactory.getBranchConfiguration(path, defaultConfigsPath);
+		addAnalysisBranch(config);
 	}
 
-	public void addAnalysisBranch(final Configuration configuration) {
-		// TODO Do something
+	public void addAnalysisBranch(final Configuration branchConfig) {
 
-		RecordFilter recordFilter = RecordFilter.builder()
-				.operationSignature(configuration.getString("filter.operationSignature"))
-				.classSignature(configuration.getString("filter.operationSignature"))
-				.hostname(configuration.getString("filter.operationSignature"))
-				.sessionId(configuration.getString("filter.sessionId"))
-				.threadId(configuration.getLong("filter.threadId", null))
-				.build();
-
-		// TODO Get them from properties
-		Duration slidingWindowDuration = Duration.parse(configuration.getString("slidingWindowDuration"));
-		Duration normalizationDuration = Duration.parse(configuration.getString("normalizationDuration"));
-
-		try {
-			// get forecaster class by using reflection
-			Class<?> algorithmClass = Class.forName(configuration.getString("forecaster"));
-
-			// Class<?>[] constructorParameterClasses = new Class[] { TaskFarmConfiguration.class };
-			// Object[] constructorParameterObjects = new Object[] { this.configuration };
-
-			// Constructor<?> algorithmConstructor = algorithmClass.getConstructor(constructorParameterClasses);
-
-			// algorithm = (AbstractThroughputAlgorithm) algorithmConstructor.newInstance(constructorParameterObjects); // NOPMD: returns in outer block
-		} catch (Exception exception) {
-			// TODO
+		final String identifier = branchConfig.getString("id");
+		if (identifier == null) {
+			throw new IllegalArgumentException("The property \"id\" is required.");
 		}
 
-		Forecaster forecaster = new RegressionForecaster();
-		Aggregator aggregator = new MeanAggregator();
-		CassandraAdapter storageAdapter = new CassandraAdapter(this.cassandraManager.getSession(), "measurements", "foo()-160805-2");
+		// The RecordFilter builder is able to handle null values
+		RecordFilter recordFilter = RecordFilter.builder()
+				.operationSignature(branchConfig.getString("filter.operationSignature"))
+				.classSignature(branchConfig.getString("filter.operationSignature"))
+				.hostname(branchConfig.getString("filter.operationSignature"))
+				.sessionId(branchConfig.getString("filter.sessionId"))
+				.threadId(branchConfig.getLong("filter.threadId", null))
+				.build();
+
+		Duration slidingWindowDuration = Duration.parse(branchConfig.getString("slidingWindowDuration"));
+		Duration normalizationDuration = Duration.parse(branchConfig.getString("normalizationDuration"));
+
+		ForecasterConfiguration forecasterConfig = new ForecasterConfiguration();
+		if (this.configuration.getBoolean("rserve.enabled")) {
+			forecasterConfig.put(AbstractRForecaster.HOST_CONFIGURATION_KEY, this.configuration.getString("rserve.address"));
+			forecasterConfig.put(AbstractRForecaster.PORT_CONFIGURATION_KEY, this.configuration.getString("rserve.port"));
+		}
+
+		Forecaster forecaster = Forecasters.getByClassName(branchConfig.getString("forecaster"), forecasterConfig);
+		Aggregator aggregator = new MeanAggregator(); // TODO Get'em from properties
+
+		CassandraAdapter storageAdapter = new CassandraAdapter(this.cassandraManager.getSession(), branchConfig.getString("cassandra.table"), identifier);
+		storageAdapter.setSeriesIdColumn(branchConfig.getString("cassandra.column.seriesId"));
+		storageAdapter.setTimeColumn(branchConfig.getString("cassandra.column.time"));
+		storageAdapter.setNanoColumn(branchConfig.getString("cassandra.column.nanos"));
+		storageAdapter.setMeasurementColumn(branchConfig.getString("cassandra.column.measurement"));
+		storageAdapter.setPredictionColumn(branchConfig.getString("cassandra.column.prediction"));
+		storageAdapter.setAnomalyscoreColumn(branchConfig.getString("cassandra.column.anomalyscore"));
 
 		this.analysisConfiguration.addAnalysis(recordFilter, slidingWindowDuration, normalizationDuration, aggregator, forecaster, storageAdapter);
+
+		// TODO Add meta data record here
 	}
 
 	public void start() {
@@ -104,7 +109,7 @@ public class Analysis {
 
 	public static void main(final String[] args) throws Exception {
 		Analysis analysis = new Analysis();
-		// analysis.addAnalysisBranchesFromPropertyFiles(); //TODO
+		analysis.addAnalysisBranchesFromPropertyFiles(); // TODO
 		analysis.start();
 
 	}
