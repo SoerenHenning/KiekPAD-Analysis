@@ -6,6 +6,7 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 
 import kiekpad.analysis.domain.RecordFilter;
+import kiekpad.analysis.stage.PrinterStage;
 import kiekpad.analysis.stage.RecordConverterStage;
 import kiekpad.analysis.stage.RecordDistributorStage;
 import kiekpad.analysis.stage.RecordReconstructorStage;
@@ -27,13 +28,13 @@ public class AnalysisConfiguration extends Configuration {
 		final TcpReaderStage tcpReaderStage = new TcpReaderStage();
 		final InstanceOfFilter<IMonitoringRecord, IFlowRecord> flowRecordFilter = new InstanceOfFilter<>(IFlowRecord.class);
 		final RecordReconstructorStage recordReconstructor = new RecordReconstructorStage();
-		// final PrinterStage printerStage = new PrinterStage();
+		final PrinterStage printerStage = new PrinterStage(); // TODO Temp
 
 		// Connect the stages
 		super.connectPorts(tcpReaderStage.getOutputPort(), flowRecordFilter.getInputPort());
 		super.connectPorts(flowRecordFilter.getMatchedOutputPort(), recordReconstructor.getInputPort());
 		super.connectPorts(recordReconstructor.getOutputPort(), this.distributor.getInputPort());
-		// super.connectPorts(recordReconstructor.getOutputPort(), printerStage.getInputPort());
+		super.connectPorts(this.distributor.getNewOutputPort(RecordFilter.builder().build()), printerStage.getInputPort());
 
 	}
 

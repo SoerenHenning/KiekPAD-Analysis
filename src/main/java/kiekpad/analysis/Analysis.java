@@ -44,9 +44,13 @@ public class Analysis {
 	}
 
 	public void addAnalysisBranchesFromPropertyFiles(final Path directory) {
-		final PathMatcher filter = directory.getFileSystem().getPathMatcher("glob:*.properties");
+		System.out.println("Use directory: " + directory); // TODO Temp
+		System.out.println("abs: " + directory.toAbsolutePath().toString()); // TODO Temp
+
+		final PathMatcher filter = directory.getFileSystem().getPathMatcher("glob:**.properties");
+
 		try {
-			Files.list(directory).filter(filter::matches).forEach(file -> addAnalysisBranchFromPropertyFile(file));
+			Files.list(directory).filter(x -> filter.matches(x)).forEach(file -> addAnalysisBranchFromPropertyFile(file));
 		} catch (IOException e) {
 			// TODO Exception
 			e.printStackTrace();
@@ -54,9 +58,8 @@ public class Analysis {
 	}
 
 	public void addAnalysisBranchFromPropertyFile(final Path path) {
-		String defaultConfigsPathString = configuration.getString("branches.path");
-		Path defaultConfigsPath = Paths.get(Analysis.class.getClassLoader().getResource(defaultConfigsPathString).getFile());
-		Configuration config = ConfigurationFactory.getBranchConfiguration(path, defaultConfigsPath);
+		System.out.println("Use configuration: " + path); // TODO Temp
+		Configuration config = ConfigurationFactory.getBranchConfiguration(path);
 		addAnalysisBranch(config);
 	}
 
@@ -70,8 +73,8 @@ public class Analysis {
 		// The RecordFilter builder is able to handle null values
 		RecordFilter recordFilter = RecordFilter.builder()
 				.operationSignature(branchConfig.getString("filter.operationSignature"))
-				.classSignature(branchConfig.getString("filter.operationSignature"))
-				.hostname(branchConfig.getString("filter.operationSignature"))
+				.classSignature(branchConfig.getString("filter.classSignature"))
+				.hostname(branchConfig.getString("filter.hostname"))
 				.sessionId(branchConfig.getString("filter.sessionId"))
 				.threadId(branchConfig.getLong("filter.threadId", null))
 				.build();
@@ -110,6 +113,8 @@ public class Analysis {
 	public static void main(final String[] args) throws Exception {
 		Analysis analysis = new Analysis();
 		analysis.addAnalysisBranchesFromPropertyFiles(); // TODO
+		// analysis.addAnalysisBranchFromPropertyFile(Paths.get(Analysis.class.getClassLoader().getResource("META-INF/evaluation-foo-meanforecaster.properties").toURI()));
+
 		analysis.start();
 
 	}

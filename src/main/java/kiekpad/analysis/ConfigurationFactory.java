@@ -12,6 +12,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 public class ConfigurationFactory {
 
 	private final static String DEFAULT_PROPERTY_LOCATION = "META-INF/application.properties";
+	private final static String DEFAULT_BRANCH_PROPERTY_LOCATION = "META-INF/branch.properties";
 	private final static String USER_PROPERTY_LOCATION = "application.properties";
 
 	public static Configuration getApplicationConfiguration() {
@@ -47,7 +48,7 @@ public class ConfigurationFactory {
 		return configuration;
 	}
 
-	public static Configuration getBranchConfiguration(final Path configFile, final Path defaultConfigFile) {
+	public static Configuration getBranchConfiguration(final Path configFile) {
 		final Configurations configurationsHelper = new Configurations();
 
 		final CompositeConfiguration configuration = new CompositeConfiguration();
@@ -60,7 +61,7 @@ public class ConfigurationFactory {
 		}
 
 		try {
-			configuration.addConfiguration(configurationsHelper.properties(defaultConfigFile.toFile()));
+			configuration.addConfiguration(configurationsHelper.properties(DEFAULT_BRANCH_PROPERTY_LOCATION));
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
