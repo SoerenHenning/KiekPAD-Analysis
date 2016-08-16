@@ -13,7 +13,7 @@ public class ConfigurationFactory {
 
 	private final static String DEFAULT_PROPERTY_LOCATION = "META-INF/application.properties";
 	private final static String DEFAULT_BRANCH_PROPERTY_LOCATION = "META-INF/branch.properties";
-	private final static String USER_PROPERTY_LOCATION = "application.properties";
+	private final static String USER_PROPERTY_LOCATION = "config/application.properties";
 
 	public static Configuration getApplicationConfiguration() {
 		final Configurations configurationsHelper = new Configurations();
@@ -21,13 +21,17 @@ public class ConfigurationFactory {
 		final CompositeConfiguration configuration = new CompositeConfiguration();
 
 		Path path = Paths.get(USER_PROPERTY_LOCATION);
+		System.out.println("Look for user config in: " + path); // TODO Temp
 		if (Files.exists(path)) {
+			System.out.println("Config found"); // TODO Temp
 			try {
 				configuration.addConfiguration(configurationsHelper.properties(path.toFile()));
 			} catch (ConfigurationException e) {
 				throw new IllegalArgumentException("Could not load configuration from file "
 						+ "\"" + USER_PROPERTY_LOCATION + "\"", e);
 			}
+		} else {
+			System.out.println("No config found"); // TODO Temp
 		}
 
 		// File file = new File(Analysis.class.getClassLoader().getResource(DEFAULT_PROPERTY_LOCATION).getFile());

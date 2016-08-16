@@ -40,6 +40,7 @@ public class Analysis {
 	}
 
 	public void addAnalysisBranchesFromPropertyFiles() {
+		System.out.println("Search for user config."); // TODO Temp
 		String directoryString = configuration.getString("branches.path");
 		Path directory = Paths.get(directoryString);
 		this.addAnalysisBranchesFromPropertyFiles(directory);
