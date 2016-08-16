@@ -25,7 +25,8 @@ public class Analysis {
 	private final AnalysisConfiguration analysisConfiguration;
 	private final CassandraManager cassandraManager;
 
-	// TODO get user config by parameter
+	// TODO Remove debugging stuff
+
 	public Analysis() {
 
 		this.configuration = ConfigurationFactory.getApplicationConfiguration();
