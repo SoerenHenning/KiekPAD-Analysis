@@ -5,6 +5,7 @@ import java.time.Instant;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.exceptions.InvalidQueryException;
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
 
 public class CassandraManager {
@@ -43,8 +44,19 @@ public class CassandraManager {
 				} else {
 					throw exception;
 				}
+			} catch (InvalidQueryException exception) {
+				// Keyspace does not exist
+				System.out.println("Create Keyspace..."); // TODO
+				createKeyspaceIfNotExists(cluster, keyspace);
 			}
 		}
+	}
+
+	private void createKeyspaceIfNotExists(final Cluster cluster, final String keyspace) {
+		Session session = cluster.connect();
+		session.execute("CREATE KEYSPACE IF NOT EXISTS " + keyspace + " WITH replication " +
+				"= {'class':'SimpleStrategy', 'replication_factor':1};");
+		session.close();
 	}
 
 }
