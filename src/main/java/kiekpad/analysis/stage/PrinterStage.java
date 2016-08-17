@@ -7,7 +7,7 @@ public class PrinterStage extends AbstractConsumerStage<MonitoringRecord> {
 
 	@Override
 	protected void execute(final MonitoringRecord element) {
-		System.out.println(element);
+		System.out.println(element.getTime() + ": " + element.getOperationSignature() + " - " + element.getDuration());
 	}
 
 }
