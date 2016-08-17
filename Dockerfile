@@ -5,4 +5,6 @@ RUN mv -f target/kiekpad-analysis.jar kiekpad-analysis.jar
 
 VOLUME /usr/src/app/config
 
+EXPOSE 10133 10134
+
 CMD ["java", "-jar", "kiekpad-analysis.jar"]
