@@ -114,12 +114,13 @@ public class Analysis {
 	}
 
 	public static void main(final String[] args) throws Exception {
-		Analysis analysis = new Analysis();
-		analysis.addAnalysisBranchesFromPropertyFiles(); // TODO
-		// analysis.addAnalysisBranchFromPropertyFile(Paths.get(Analysis.class.getClassLoader().getResource("META-INF/evaluation-foo-meanforecaster.properties").toURI()));
-
-		analysis.start();
-
+		while (true) {
+			Analysis analysis = new Analysis();
+			analysis.addAnalysisBranchesFromPropertyFiles(); // TODO
+			// analysis.addAnalysisBranchFromPropertyFile(Paths.get(Analysis.class.getClassLoader().getResource("META-INF/evaluation-foo-meanforecaster.properties").toURI()));
+			analysis.start();
+			// Restart analysis after finishing and wait for new a new sender
+		}
 	}
 
 }

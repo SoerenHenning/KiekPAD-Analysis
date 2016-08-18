@@ -33,8 +33,9 @@ public class AnalysisConfiguration extends Configuration {
 		// Connect the stages
 		super.connectPorts(tcpReaderStage.getOutputPort(), flowRecordFilter.getInputPort());
 		super.connectPorts(flowRecordFilter.getMatchedOutputPort(), recordReconstructor.getInputPort());
-		super.connectPorts(recordReconstructor.getOutputPort(), this.distributor.getInputPort());
-		super.connectPorts(this.distributor.getNewOutputPort(RecordFilter.builder().build()), printerStage.getInputPort());
+		super.connectPorts(recordReconstructor.getOutputPort(), printerStage.getInputPort());
+		// super.connectPorts(recordReconstructor.getOutputPort(), this.distributor.getInputPort());
+		// super.connectPorts(this.distributor.getNewOutputPort(RecordFilter.builder().build()), printerStage.getInputPort());
 
 	}
 
