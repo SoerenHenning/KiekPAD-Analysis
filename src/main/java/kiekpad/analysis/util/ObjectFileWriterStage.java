@@ -24,8 +24,9 @@ public class ObjectFileWriterStage extends AbstractConsumerStage<Object> {
 	}
 
 	@Override
-	public void onTerminating() {
+	public void onTerminating() throws Exception {
 		this.printWriter.close();
+		super.onTerminating();
 	}
 
 }
