@@ -17,8 +17,8 @@ public class CountCSVWriterStage extends AbstractConsumerStage<Object> {
 	public CountCSVWriterStage(final File file) {
 		try {
 			this.printWriter = new PrintWriter(file);
-		} catch (FileNotFoundException e) {
-			throw new IllegalStateException(e);
+		} catch (FileNotFoundException exception) {
+			throw new IllegalStateException(exception);
 		}
 		this.start = Instant.now();
 		writeRow();

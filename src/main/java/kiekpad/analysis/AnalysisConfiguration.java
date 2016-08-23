@@ -1,15 +1,18 @@
 package kiekpad.analysis;
 
+import java.io.File;
 import java.time.Duration;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 
+import kiekpad.analysis.domain.MonitoringRecord;
 import kiekpad.analysis.domain.RecordFilter;
 import kiekpad.analysis.stage.PrinterStage;
 import kiekpad.analysis.stage.RecordConverterStage;
 import kiekpad.analysis.stage.RecordDistributorStage;
 import kiekpad.analysis.stage.RecordReconstructorStage;
+import kiekpad.analysis.util.CountCSVWriterStage;
 import teead.AnomalyDetectionStage;
 import teead.StorableAnomalyDetectionStage;
 import teead.aggregation.Aggregator;
@@ -17,6 +20,8 @@ import teead.forecast.Forecaster;
 import teead.storage.StorageAdapter;
 import teetime.framework.Configuration;
 import teetime.stage.InstanceOfFilter;
+import teetime.stage.basic.distributor.Distributor;
+import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 import teetime.stage.io.network.TcpReaderStage;
 
 public class AnalysisConfiguration extends Configuration {
@@ -46,9 +51,17 @@ public class AnalysisConfiguration extends Configuration {
 		final AnomalyDetectionStage anomalyDetector = new StorableAnomalyDetectionStage(slidingWindowDuration, normalizationDuration, aggregator, forecaster,
 				storageDriver);
 
+		// Create the evaluation stages
+		final Distributor<MonitoringRecord> distributor = new Distributor<>(new CopyByReferenceStrategy());
+		final CountCSVWriterStage beforeCounter = new CountCSVWriterStage(new File("before-count.csv"));
+		final CountCSVWriterStage afterCounter = new CountCSVWriterStage(new File("after-count.csv"));
+
 		// Connect the stages
-		super.connectPorts(this.distributor.getNewOutputPort(filter), recordConverter.getInputPort());
+		super.connectPorts(this.distributor.getNewOutputPort(filter), distributor.getInputPort());
+		super.connectPorts(distributor.getNewOutputPort(), beforeCounter.getInputPort());
+		super.connectPorts(distributor.getNewOutputPort(), recordConverter.getInputPort());
 		super.connectPorts(recordConverter.getOutputPort(), anomalyDetector.getInputPort());
+		super.connectPorts(anomalyDetector.getNewOutputPort(), afterCounter.getInputPort());
 	}
 
 }
