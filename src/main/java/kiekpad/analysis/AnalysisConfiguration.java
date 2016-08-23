@@ -11,7 +11,8 @@ import kiekpad.analysis.domain.RecordFilter;
 import kiekpad.analysis.stage.RecordConverterStage;
 import kiekpad.analysis.stage.RecordDistributorStage;
 import kiekpad.analysis.stage.RecordReconstructorStage;
-import kiekpad.analysis.util.CountCSVWriterStage;
+import kiekpad.analysis.util.ObjectFileWriterStage;
+import kiekpad.analysis.util.StopWatchStage;
 import teead.AnomalyDetectionStage;
 import teead.StorableAnomalyDetectionStage;
 import teead.aggregation.Aggregator;
@@ -52,15 +53,16 @@ public class AnalysisConfiguration extends Configuration {
 
 		// Create the evaluation stages
 		final Distributor<MonitoringRecord> distributor = new Distributor<>(new CopyByReferenceStrategy());
-		final CountCSVWriterStage beforeCounter = new CountCSVWriterStage(new File("before-count.csv"));
-		final CountCSVWriterStage afterCounter = new CountCSVWriterStage(new File("after-count.csv"));
+		final StopWatchStage stopWatch = new StopWatchStage();
+		final ObjectFileWriterStage executionsFileWriter = new ObjectFileWriterStage(new File("executions.csv"));
 
 		// Connect the stages
 		super.connectPorts(this.distributor.getNewOutputPort(filter), distributor.getInputPort());
-		super.connectPorts(distributor.getNewOutputPort(), beforeCounter.getInputPort());
+		super.connectPorts(distributor.getNewOutputPort(), stopWatch.getStartInputPort());
 		super.connectPorts(distributor.getNewOutputPort(), recordConverter.getInputPort());
 		super.connectPorts(recordConverter.getOutputPort(), anomalyDetector.getInputPort());
-		super.connectPorts(anomalyDetector.getNewOutputPort(), afterCounter.getInputPort());
+		super.connectPorts(anomalyDetector.getNewOutputPort(), stopWatch.getStopInputPort());
+		super.connectPorts(stopWatch.getOutputPort(), executionsFileWriter.getInputPort());
 	}
 
 }
