@@ -21,6 +21,7 @@ public class ObjectFileWriterStage extends AbstractConsumerStage<Object> {
 	@Override
 	protected void execute(final Object object) {
 		this.printWriter.println(object.toString());
+		this.printWriter.flush();
 	}
 
 	@Override
