@@ -28,7 +28,12 @@ public class AnalysisConfiguration extends Configuration {
 
 	private final RecordDistributorStage distributor = new RecordDistributorStage();
 
-	public AnalysisConfiguration() {
+	private final int iteration;
+
+	public AnalysisConfiguration(final int iteration) {
+
+		this.iteration = iteration;
+
 		// Create the stages
 		final TcpReaderStage tcpReaderStage = new TcpReaderStage();
 		final InstanceOfFilter<IMonitoringRecord, IFlowRecord> flowRecordFilter = new InstanceOfFilter<>(IFlowRecord.class);
@@ -54,7 +59,7 @@ public class AnalysisConfiguration extends Configuration {
 		// Create the evaluation stages
 		final Distributor<MonitoringRecord> distributor = new Distributor<>(new CopyByReferenceStrategy());
 		final StopWatchStage stopWatch = new StopWatchStage();
-		final ObjectFileWriterStage executionsFileWriter = new ObjectFileWriterStage(new File("executions.csv"));
+		final ObjectFileWriterStage executionsFileWriter = new ObjectFileWriterStage(new File("executions" + ".csv"));
 
 		// Connect the stages
 		super.connectPorts(this.distributor.getNewOutputPort(filter), distributor.getInputPort());

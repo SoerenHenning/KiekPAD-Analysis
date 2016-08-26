@@ -27,10 +27,10 @@ public class Analysis {
 
 	// TODO Remove debugging stuff
 
-	public Analysis() {
+	public Analysis(final int iteration) {
 
 		this.configuration = ConfigurationFactory.getApplicationConfiguration();
-		this.analysisConfiguration = new AnalysisConfiguration();
+		this.analysisConfiguration = new AnalysisConfiguration(iteration);
 		this.cassandraManager = new CassandraManager(this.configuration.getString("cassandra.address"), this.configuration.getInt("cassandra.port"),
 				this.configuration.getString("cassandra.keyspace"), this.configuration.getInt("cassandra.timeout"));
 		if (this.configuration.getBoolean("rserve.enabled")) {
@@ -68,10 +68,25 @@ public class Analysis {
 
 	public void addAnalysisBranch(final Configuration branchConfig) {
 
-		final String identifier = branchConfig.getString("id");
+		String identifier = branchConfig.getString("id");
 		if (identifier == null) {
 			throw new IllegalArgumentException("The property \"id\" is required.");
 		}
+		/*
+		 * TODO Das ist glaube ich nötig
+		 * if (branchConfig.getBoolean("autoAddParams")) {
+		 * StringBuilder identifierBuilder = new StringBuilder(identifier);
+		 * identifierBuilder.append("-");
+		 * identifierBuilder.append(branchConfig.getString("slidingWindowDuration"));
+		 * identifierBuilder.append("-");
+		 * identifierBuilder.append(branchConfig.getString("normalizationDuration"));
+		 * identifierBuilder.append("-");
+		 * identifierBuilder.append(branchConfig.getString("forecaster"));
+		 * identifierBuilder.append("-");
+		 * identifierBuilder.append("MeanAggregator"); // TODO Temp!!!
+		 * identifier = identifierBuilder.toString();
+		 * }
+		 */
 
 		// The RecordFilter builder is able to handle null values
 		RecordFilter recordFilter = RecordFilter.builder()
@@ -114,10 +129,11 @@ public class Analysis {
 	}
 
 	public static void main(final String[] args) throws Exception {
-		while (true) {
-			Analysis analysis = new Analysis();
-			analysis.addAnalysisBranchesFromPropertyFiles(); // TODO
-			// analysis.addAnalysisBranchFromPropertyFile(Paths.get(Analysis.class.getClassLoader().getResource("META-INF/evaluation-foo-meanforecaster.properties").toURI()));
+		for (int i = 0; i < 2; i++) {
+			Analysis analysis = new Analysis(i);
+			// analysis.addAnalysisBranchesFromPropertyFiles(); // TODO
+			analysis.addAnalysisBranchFromPropertyFile(
+					Paths.get(Analysis.class.getClassLoader().getResource("META-INF/test-arima.properties").toURI()));
 			analysis.start();
 			// Restart analysis after finishing and wait for new a new sender
 		}
