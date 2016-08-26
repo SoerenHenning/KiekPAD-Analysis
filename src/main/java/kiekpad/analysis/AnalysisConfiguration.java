@@ -59,7 +59,7 @@ public class AnalysisConfiguration extends Configuration {
 		// Create the evaluation stages
 		final Distributor<MonitoringRecord> distributor = new Distributor<>(new CopyByReferenceStrategy());
 		final StopWatchStage stopWatch = new StopWatchStage();
-		final ObjectFileWriterStage executionsFileWriter = new ObjectFileWriterStage(new File("executions" + ".csv"));
+		final ObjectFileWriterStage executionsFileWriter = new ObjectFileWriterStage(new File("executions-" + this.iteration + ".csv"));
 
 		// Connect the stages
 		super.connectPorts(this.distributor.getNewOutputPort(filter), distributor.getInputPort());
