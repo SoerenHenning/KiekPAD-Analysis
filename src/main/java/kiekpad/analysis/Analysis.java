@@ -131,9 +131,8 @@ public class Analysis {
 	public static void main(final String[] args) throws Exception {
 		for (int i = 0; i < 2; i++) {
 			Analysis analysis = new Analysis(i);
-			// analysis.addAnalysisBranchesFromPropertyFiles(); // TODO
-			analysis.addAnalysisBranchFromPropertyFile(
-					Paths.get(Analysis.class.getClassLoader().getResource("META-INF/test-arima.properties").toURI()));
+			analysis.addAnalysisBranchesFromPropertyFiles();
+			// analysis.addAnalysisBranchFromPropertyFile(Paths.get(Analysis.class.getClassLoader().getResource("META-INF/test-arima.properties").toURI()));
 			analysis.start();
 			// Restart analysis after finishing and wait for new a new sender
 		}
