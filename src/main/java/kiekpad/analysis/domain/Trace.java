@@ -6,6 +6,12 @@ import java.util.Deque;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
+/**
+ * A class represents traces.
+ *
+ * @author Sören Henning
+ *
+ */
 public class Trace {
 
 	private final Deque<BeforeOperationEvent> buffer = new ArrayDeque<>();

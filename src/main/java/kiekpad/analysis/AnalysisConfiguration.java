@@ -27,13 +27,11 @@ public class AnalysisConfiguration extends Configuration {
 		final TcpReaderStage tcpReaderStage = new TcpReaderStage();
 		final InstanceOfFilter<IMonitoringRecord, IFlowRecord> flowRecordFilter = new InstanceOfFilter<>(IFlowRecord.class);
 		final RecordReconstructorStage recordReconstructor = new RecordReconstructorStage();
-		// final PrinterStage printerStage = new PrinterStage(); // TODO Temp
 
 		// Connect the stages
 		super.connectPorts(tcpReaderStage.getOutputPort(), flowRecordFilter.getInputPort());
 		super.connectPorts(flowRecordFilter.getMatchedOutputPort(), recordReconstructor.getInputPort());
 		super.connectPorts(recordReconstructor.getOutputPort(), this.distributor.getInputPort());
-		// super.connectPorts(this.distributor.getNewOutputPort(RecordFilter.builder().build()), printerStage.getInputPort()); // TODO Temp
 
 	}
 

@@ -2,6 +2,12 @@ package kiekpad.analysis.domain;
 
 import java.time.Instant;
 
+/**
+ * This class represents a monitored operation call.
+ *
+ * @author Sören Henning
+ *
+ */
 public class MonitoringRecord {
 
 	private String operationSignature;

@@ -15,6 +15,12 @@ import kiekpad.analysis.domain.MonitoringRecord;
 import kiekpad.analysis.domain.Trace;
 import teetime.stage.basic.AbstractTransformation;
 
+/**
+ * A TeeTime stage that reconstructs a sequence of {@link IFlowRecord}s to a sequence of {@link MonitoringRecord}s
+ *
+ * @author Sören Henning
+ *
+ */
 public class RecordReconstructorStage extends AbstractTransformation<IFlowRecord, MonitoringRecord> {
 
 	private final Map<Long, Trace> traces = new HashMap<>();

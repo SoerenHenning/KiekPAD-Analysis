@@ -2,6 +2,14 @@ package kiekpad.analysis.domain;
 
 import java.util.function.Predicate;
 
+/**
+ * A record filter tests whether monitoring records are of a certain type.
+ * It can be configured by the criteria operation signature, class signature, host name, session identifier, and thread identifier.
+ * If no value is set for a criteria, this means it is not tested and acts like a wildcard.
+ *
+ * @author Sören Henning
+ *
+ */
 public class RecordFilter implements Predicate<MonitoringRecord> {
 
 	private String operationSignature = null;

@@ -14,6 +14,8 @@ public class CassandraManager {
 
 	private final static int WAITING_SLEEP_MILLIS = 1000;
 
+	// BETTER A logger should be used to replace the System.out.println()
+
 	public CassandraManager(final String host, final int port, final String keyspace, final int timeoutInMillis) {
 		createSession(host, port, keyspace, timeoutInMillis);
 	}
@@ -32,7 +34,7 @@ public class CassandraManager {
 				break;
 			} catch (NoHostAvailableException exception) {
 				// Host not unavailable
-				System.out.println("Waiting for host..."); // TODO
+				// System.out.println("Waiting for host...");
 				if (Duration.between(start, Instant.now()).toMillis() < timeoutInMillis) {
 					cluster.close();
 					cluster = Cluster.builder().addContactPoint(host).withPort(port).build();
@@ -46,7 +48,7 @@ public class CassandraManager {
 				}
 			} catch (InvalidQueryException exception) {
 				// Keyspace does not exist
-				System.out.println("Create Keyspace..."); // TODO
+				// System.out.println("Create Keyspace...");
 				createKeyspaceIfNotExists(cluster, keyspace);
 			}
 		}

@@ -9,6 +9,12 @@ import teetime.framework.OutputPort;
 import teetime.stage.basic.distributor.Distributor;
 import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 
+/**
+ * A TeeTime stage that distributes {@link MonitoringRecord}s to output ports if they match a given {@link RecordFilter}
+ *
+ * @author Sören Henning
+ *
+ */
 public class RecordDistributorStage extends CompositeStage {
 
 	private final InputPort<MonitoringRecord> inputPort;
