@@ -1,6 +1,7 @@
 package kiekpad.analysis;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -11,7 +12,8 @@ import org.apache.commons.configuration2.Configuration;
 
 import kiekpad.analysis.domain.RecordFilter;
 import teead.aggregation.Aggregator;
-import teead.aggregation.MeanAggregator;
+import teead.aggregation.AggregatorConfiguration;
+import teead.aggregation.Aggregators;
 import teead.forecast.AbstractRForecaster;
 import teead.forecast.Forecaster;
 import teead.forecast.ForecasterConfiguration;
@@ -25,7 +27,7 @@ public class Analysis {
 	private final AnalysisConfiguration analysisConfiguration;
 	private final CassandraManager cassandraManager;
 
-	// TODO Remove debugging stuff
+	// BETTER A logger should be used to replace the System.out.println()
 
 	public Analysis() {
 
@@ -40,15 +42,15 @@ public class Analysis {
 	}
 
 	public void addAnalysisBranchesFromPropertyFiles() {
-		System.out.println("Search for user config."); // TODO Temp
+		// System.out.println("Search for user config.");
 		String directoryString = configuration.getString("branches.path");
 		Path directory = Paths.get(directoryString);
 		this.addAnalysisBranchesFromPropertyFiles(directory);
 	}
 
 	public void addAnalysisBranchesFromPropertyFiles(final Path directory) {
-		System.out.println("Use directory: " + directory); // TODO Temp
-		System.out.println("abs: " + directory.toAbsolutePath().toString()); // TODO Temp
+		// System.out.println("Use directory: " + directory);
+		// System.out.println("abs: " + directory.toAbsolutePath().toString());
 
 		final PathMatcher filter = directory.getFileSystem().getPathMatcher("glob:**.properties");
 
@@ -56,12 +58,12 @@ public class Analysis {
 			Files.list(directory).filter(x -> filter.matches(x)).forEach(file -> addAnalysisBranchFromPropertyFile(file));
 		} catch (IOException e) {
 			// TODO Exception
-			e.printStackTrace();
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	public void addAnalysisBranchFromPropertyFile(final Path path) {
-		System.out.println("Use configuration: " + path); // TODO Temp
+		// System.out.println("Use configuration: " + path);
 		Configuration config = ConfigurationFactory.getBranchConfiguration(path);
 		addAnalysisBranch(config);
 	}
@@ -92,7 +94,7 @@ public class Analysis {
 		}
 
 		Forecaster forecaster = Forecasters.getByClassName(branchConfig.getString("forecaster"), forecasterConfig);
-		Aggregator aggregator = new MeanAggregator(); // TODO Get'em from properties
+		Aggregator aggregator = Aggregators.getByClassName(branchConfig.getString("aggregator"), new AggregatorConfiguration());
 
 		CassandraAdapter storageAdapter = new CassandraAdapter(this.cassandraManager.getSession(), branchConfig.getString("cassandra.table"), identifier);
 		storageAdapter.setSeriesIdColumn(branchConfig.getString("cassandra.column.seriesId"));
@@ -103,12 +105,10 @@ public class Analysis {
 		storageAdapter.setAnomalyscoreColumn(branchConfig.getString("cassandra.column.anomalyscore"));
 
 		this.analysisConfiguration.addAnalysis(recordFilter, slidingWindowDuration, normalizationDuration, aggregator, forecaster, storageAdapter);
-
-		// TODO Add meta data record here
 	}
 
 	public void start() {
-		// This could be moved to a member variable
+		// This could be moved to a member variable in future versions of TeeTime
 		final Execution<AnalysisConfiguration> analysisExecution = new Execution<>(this.analysisConfiguration);
 		analysisExecution.executeBlocking();
 	}
@@ -116,8 +116,7 @@ public class Analysis {
 	public static void main(final String[] args) throws Exception {
 		while (true) {
 			Analysis analysis = new Analysis();
-			analysis.addAnalysisBranchesFromPropertyFiles(); // TODO
-			// analysis.addAnalysisBranchFromPropertyFile(Paths.get(Analysis.class.getClassLoader().getResource("META-INF/evaluation-foo-meanforecaster.properties").toURI()));
+			analysis.addAnalysisBranchesFromPropertyFiles();
 			analysis.start();
 			// Restart analysis after finishing and wait for new a new sender
 		}

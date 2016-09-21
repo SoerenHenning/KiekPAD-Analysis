@@ -15,15 +15,17 @@ public class ConfigurationFactory {
 	private final static String DEFAULT_BRANCH_PROPERTY_LOCATION = "META-INF/branch.properties";
 	private final static String USER_PROPERTY_LOCATION = "config/application.properties";
 
+	// BETTER A logger should be used to replace the System.out.println()
+
 	public static Configuration getApplicationConfiguration() {
 		final Configurations configurationsHelper = new Configurations();
 
 		final CompositeConfiguration configuration = new CompositeConfiguration();
 
 		Path path = Paths.get(USER_PROPERTY_LOCATION);
-		System.out.println("Look for user config in: " + path); // TODO Temp
+		// System.out.println("Look for user config in: " + path);
 		if (Files.exists(path)) {
-			System.out.println("Config found"); // TODO Temp
+			// System.out.println("Config found");
 			try {
 				configuration.addConfiguration(configurationsHelper.properties(path.toFile()));
 			} catch (ConfigurationException e) {
@@ -31,18 +33,10 @@ public class ConfigurationFactory {
 						+ "\"" + USER_PROPERTY_LOCATION + "\"", e);
 			}
 		} else {
-			System.out.println("No config found"); // TODO Temp
+			// System.out.println("No config found");
 		}
 
-		// File file = new File(Analysis.class.getClassLoader().getResource(DEFAULT_PROPERTY_LOCATION).getFile());
-
-		// URL url = Analysis.class.getClassLoader().getResource("");
-		// Path path12 = Paths.get(url.toString());
-		// System.out.println(path12); // TODO
 		try {
-			// System.out.println("file: " + file); // TODO
-			// System.out.println("file.exists()" + file.exists()); // TODO
-			// System.out.println("file.toPath()" + file.toPath()); // TODO
 			configuration.addConfiguration(configurationsHelper.properties(DEFAULT_PROPERTY_LOCATION));
 		} catch (ConfigurationException e) {
 			throw new IllegalArgumentException("Could not load configuration from ressource "
@@ -60,15 +54,15 @@ public class ConfigurationFactory {
 		try {
 			configuration.addConfiguration(configurationsHelper.properties(configFile.toFile()));
 		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO Exception
+			throw new IllegalStateException(e);
 		}
 
 		try {
 			configuration.addConfiguration(configurationsHelper.properties(DEFAULT_BRANCH_PROPERTY_LOCATION));
 		} catch (ConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO Exception
+			throw new IllegalStateException(e);
 		}
 
 		return configuration;
